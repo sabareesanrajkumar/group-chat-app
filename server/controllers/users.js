@@ -5,6 +5,14 @@ require("dotenv").config();
 exports.createUser = async (req, res, next) => {
   try {
     const { userName, email, passWord, phoneNumber } = req.body;
+
+    const existingUser = await Users.findOne({ where: { email } });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User already exists" });
+    }
+
     const saltrounds = 10;
     bcrypt.hash(passWord, saltrounds, async (err, hash) => {
       await Users.create({ userName, email, passWord: hash, phoneNumber });
@@ -13,7 +21,7 @@ exports.createUser = async (req, res, next) => {
   } catch (err) {
     if (err.name === "SequelizeUniqueConstraintError") {
       return res
-        .status(500)
+        .status(401)
         .json({ success: false, message: "user already exists" });
     }
     return res

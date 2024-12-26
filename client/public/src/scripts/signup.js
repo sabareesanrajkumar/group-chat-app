@@ -17,6 +17,12 @@ document
       if (postResponse.status == 200) {
         window.location.href = "login.html";
       }
+      if (postResponse.status == 400) {
+        alert("user already exists");
+      }
+      if (postResponse.status == 500) {
+        alert("failed to create user");
+      }
       resetForm(event);
     } catch (err) {
       resetForm(event);
@@ -24,6 +30,7 @@ document
         document.getElementById("error").innerHTML = JSON.stringify(
           err.response.data.message
         );
+        alert(JSON.stringify(err.response.data.message));
       }
     }
   });
