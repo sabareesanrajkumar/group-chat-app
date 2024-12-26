@@ -7,6 +7,7 @@ document
       email: event.target.email.value,
       passWord: event.target.password.value,
     };
+
     try {
       const postResponse = await axios.post(
         "http://localhost:3000/user/login",
