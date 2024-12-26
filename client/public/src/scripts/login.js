@@ -13,6 +13,7 @@ document
         "http://localhost:3000/user/login",
         FormData
       );
+      localStorage.setItem("token", postResponse.data.token);
       resetForm(event);
     } catch (err) {
       resetForm(event);
@@ -37,6 +38,7 @@ async function forgotPassword() {
       );
       event.target.email.value = "";
       document.getElementById("forgot-password-form").style.display = "none";
+      document.getElementById("login-form").style.display = "flex";
       alert("reset link sent to your mail");
     });
 }
