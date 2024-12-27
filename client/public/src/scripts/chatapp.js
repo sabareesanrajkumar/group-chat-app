@@ -7,10 +7,12 @@ let messages = JSON.parse(localStorage.getItem("messages")) || [];
 
 async function displayMessages() {
   chatBox.innerHTML = "";
-  const messages = await axios.get("http://localhost:3000/chat/", {
+  const response = await axios.get("http://localhost:3000/chat/", {
     headers: { Authorization: token, "Content-Type": "application/json" },
   });
-  messages.data.forEach((message) => {
+  const messages = response.data;
+  console.log(messages);
+  messages.forEach((message) => {
     const messageElement = document.createElement("div");
     messageElement.classList.add("message");
     messageElement.innerHTML = `<span>~${message.user.username}</span><p>${message.text}</p>`;
@@ -38,9 +40,11 @@ async function sendMessage() {
       alert("failed to send message");
     }
   }
-
-  displayMessages();
 }
+
+setInterval(() => {
+  displayMessages();
+}, 1000);
 
 sendButton.addEventListener("click", sendMessage);
 
@@ -49,4 +53,3 @@ messageInput.addEventListener("keypress", (e) => {
     sendMessage();
   }
 });
-displayMessages();

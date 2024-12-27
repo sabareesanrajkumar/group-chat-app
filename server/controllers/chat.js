@@ -11,7 +11,7 @@ exports.getChat = async (req, res, next) => {
         },
       ],
     });
-    res.status(200).json({ success: true, messages: messages });
+    res.status(200).json(messages);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
