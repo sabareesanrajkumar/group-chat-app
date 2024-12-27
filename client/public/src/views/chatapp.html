@@ -11,12 +11,26 @@
     <div class="chat-container">
         <div class="chat-header">
             <h2>Group Chat</h2>
+            <select id="group-select">
+                <option value="" disabled selected>Select Group</option>
+            </select>
+            <button id="create-group-button">Create Group</button>
         </div>
         <div class="chat-box" id="chat-box">
         </div>
         <div class="chat-input">
             <input type="text" id="message-input" placeholder="Type a message...">
             <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <div id="create-group-modal" class="modal hidden">
+        <div class="modal-content">
+            <span id="close-modal" class="close">&times;</span>
+            <h3>Create Group</h3>
+            <input type="text" id="group-name" placeholder="Group Name">
+            <input type="text" id="group-description" placeholder="Group Description">
+            <button id="create-group-submit">Create</button>
         </div>
     </div>
 

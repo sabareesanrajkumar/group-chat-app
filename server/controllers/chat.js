@@ -5,10 +5,12 @@ const { Op } = require("sequelize");
 exports.getChat = async (req, res, next) => {
   try {
     const lastFetchedId = req.query.lastFetchedId;
-    const whereCondition = lastFetchedId
-      ? { id: { [Op.gt]: lastFetchedId } }
-      : {};
-
+    const groupId = req.query.groupId;
+    console.log(req.query);
+    const whereCondition = {
+      groupId,
+      ...(lastFetchedId && { id: { [Op.gt]: lastFetchedId } }),
+    };
     const messages = await Chat.findAll({
       where: whereCondition,
       include: [
@@ -27,9 +29,13 @@ exports.getChat = async (req, res, next) => {
 
 exports.send = async (req, res, next) => {
   try {
-    const { text } = req.body;
+    const { text, groupId } = req.body;
     const userId = req.user.id;
-    const chat = await Chat.create({ userId: userId, text: text });
+    const chat = await Chat.create({
+      userId: userId,
+      text: text,
+      groupId: groupId,
+    });
     res.status(201).json({ success: true });
   } catch (error) {
     res.status(400).json({ error: error.message });
