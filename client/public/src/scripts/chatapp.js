@@ -74,6 +74,20 @@ async function sendMessage() {
   const messageText = messageInput.value.trim();
   const groupId = document.getElementById("group-select").value;
 
+  const fileInput = document.getElementById("file-input");
+  if (fileInput.files[0]) {
+    formData.append("file", fileInput.files[0]);
+    const fileResponse = await axios.post(
+      "http://localhost:3000/chat/upload",
+      formData,
+      {
+        headers: { Authorization: token },
+      }
+    );
+  }
+  if (fileResponse.status === 200) {
+    const fileUrl = fileResponse.data.fileUrl;
+  }
   if (messageText && groupId) {
     try {
       await axios.post(
@@ -81,6 +95,7 @@ async function sendMessage() {
         {
           text: messageText,
           groupId,
+          fileUrl,
         },
         {
           headers: { Authorization: token },

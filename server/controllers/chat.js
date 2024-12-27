@@ -29,12 +29,13 @@ exports.getChat = async (req, res, next) => {
 
 exports.send = async (req, res, next) => {
   try {
-    const { text, groupId } = req.body;
+    const { text, groupId, fileUrl } = req.body;
     const userId = req.user.id;
     const chat = await Chat.create({
       userId: userId,
       text: text,
       groupId: groupId,
+      fileUrl: fileUrl,
     });
     res.status(201).json({ success: true });
   } catch (error) {

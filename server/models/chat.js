@@ -14,6 +14,7 @@ const Chat = sequelize.define("Chat", {
     type: Sequelize.DATE,
     defaultValue: Sequelize.NOW,
   },
+  fileUrl: DataTypes.STRING,
 });
 
 module.exports = Chat;
