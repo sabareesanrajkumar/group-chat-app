@@ -3,6 +3,8 @@ const sendButton = document.getElementById("send-button");
 const chatBox = document.getElementById("chat-box");
 const token = localStorage.getItem("token");
 
+const socket = io("http://localhost:3000");
+
 let storedMessages = JSON.parse(localStorage.getItem("messages")) || [];
 let lastFetchedId = 0;
 
@@ -52,12 +54,14 @@ async function displayMessages(groupId) {
     if (messages.length > 0) {
       lastFetchedId = messages[messages.length - 1].id;
     }
-    messages.forEach((message) => {
+
+    socket.on("newMessage", (message) => {
       const messageElement = document.createElement("div");
       messageElement.classList.add("message");
       messageElement.id = message.id;
       messageElement.innerHTML = `<span>~${message.user.username}</span><p>${message.text}</p>`;
       chatBox.appendChild(messageElement);
+      chatBox.scrollTop = chatBox.scrollHeight;
     });
 
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -82,6 +86,14 @@ async function sendMessage() {
           headers: { Authorization: token },
         }
       );
+      if (messageText) {
+        socket.emit("sendMessage", {
+          groupId: currentGroup,
+          text: messageText,
+          token,
+        });
+        messageInput.value = "";
+      }
 
       messageInput.value = "";
     } catch (error) {
@@ -91,9 +103,24 @@ async function sendMessage() {
   }
 }
 
-setInterval(() => {
-  //displayMessages(document.getElementById("group-select").value);
-}, 1000);
+socket.on("sendMessage", async ({ groupId, userId, text }) => {
+  try {
+    const newMessage = await Chat.create({ groupId, userId, text });
+
+    const messageData = {
+      id: newMessage.id,
+      groupId: newMessage.groupId,
+      text: newMessage.text,
+      user: {
+        id: userId,
+        username: (await User.findByPk(userId)).username,
+      },
+    };
+    io.to(groupId).emit("newMessage", messageData);
+  } catch (error) {
+    console.error("Error sending message:", error.message);
+  }
+});
 
 async function createGroup() {
   const groupName = groupNameInput.value.trim();
@@ -183,3 +210,13 @@ removeMemberButton.addEventListener("click", async () => {
 
 const selectedGroupId = groupSelect.value;
 checkAdminPrivileges(selectedGroupId);
+
+function joinGroup() {
+  const newGroup = groupSelect.value;
+  if (currentGroup) {
+    socket.emit("leaveGroup", currentGroup);
+  }
+  currentGroup = newGroup;
+  chatBox.innerHTML = "";
+  socket.emit("joinGroup", currentGroup);
+}
