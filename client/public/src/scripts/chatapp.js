@@ -4,22 +4,23 @@ const chatBox = document.getElementById("chat-box");
 const token = localStorage.getItem("token");
 
 let messages = JSON.parse(localStorage.getItem("messages")) || [];
-
+let lastFetchedId = 0;
 async function displayMessages() {
-  chatBox.innerHTML = "";
   const response = await axios.get("http://localhost:3000/chat/", {
     headers: { Authorization: token, "Content-Type": "application/json" },
+    params: { lastFetchedId: lastFetchedId },
   });
   const messages = response.data;
-  console.log(messages);
+  if (messages.length > 0) {
+    lastFetchedId = messages[messages.length - 1].id;
+  }
   messages.forEach((message) => {
     const messageElement = document.createElement("div");
     messageElement.classList.add("message");
+    messageElement.id = message.id;
     messageElement.innerHTML = `<span>~${message.user.username}</span><p>${message.text}</p>`;
     chatBox.appendChild(messageElement);
   });
-
-  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 async function sendMessage() {
@@ -34,6 +35,9 @@ async function sendMessage() {
     );
     if (sendResponse.status === 201) {
       document.getElementById("message-input").value = "";
+      setTimeout(() => {
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, 1000);
     }
 
     if (sendResponse.status != 201) {
