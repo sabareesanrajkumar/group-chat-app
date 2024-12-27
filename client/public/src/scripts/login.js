@@ -14,6 +14,7 @@ document
         FormData
       );
       localStorage.setItem("token", postResponse.data.token);
+      window.location.href = "chatapp.html";
       resetForm(event);
     } catch (err) {
       resetForm(event);
