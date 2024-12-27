@@ -1,13 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 
+const app = express();
+app.use(express.json());
 const sequelize = require("./util/database");
-const Users = require("./models/users");
+const User = require("./models/users");
+const Chat = require("./models/chat");
 
 const userRoutes = require("./routes/users");
 const passwordRoutes = require("./routes/password");
-
-const app = express();
+const chatRoutes = require("./routes/chat");
 
 app.use(
   cors({
@@ -16,10 +18,13 @@ app.use(
     allowedHeaders: "Content-Type,Authorization",
   })
 );
-app.use(express.json());
 
 app.use("/user", userRoutes);
 app.use("/password", passwordRoutes);
+app.use("/chat", chatRoutes);
+
+User.hasMany(Chat, { foreignKey: "userId" });
+Chat.belongsTo(User, { foreignKey: "userId" });
 
 sequelize
   .sync()
