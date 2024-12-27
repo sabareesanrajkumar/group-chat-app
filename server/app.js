@@ -14,6 +14,8 @@ const passwordRoutes = require("./routes/password");
 const chatRoutes = require("./routes/chat");
 const groupRoutes = require("./routes/group");
 
+const adminRoutes = require("./routes/admin");
+
 app.use(
   cors({
     origin: "null",
@@ -26,6 +28,7 @@ app.use("/user", userRoutes);
 app.use("/password", passwordRoutes);
 app.use("/chat", chatRoutes);
 app.use("/groups", groupRoutes);
+app.use("/admin", adminRoutes);
 
 User.hasMany(Chat, { foreignKey: "userId" });
 Chat.belongsTo(User, { foreignKey: "userId" });

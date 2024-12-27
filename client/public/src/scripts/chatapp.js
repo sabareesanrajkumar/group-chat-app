@@ -92,7 +92,7 @@ async function sendMessage() {
 }
 
 setInterval(() => {
-  displayMessages(groupId);
+  //displayMessages(document.getElementById("group-select").value);
 }, 1000);
 
 async function createGroup() {
@@ -138,3 +138,48 @@ closeModal.addEventListener("click", () => {
 createGroupSubmit.addEventListener("click", createGroup);
 
 loadGroups();
+
+const addMemberButton = document.getElementById("add-member-button");
+const removeMemberButton = document.getElementById("remove-member-button");
+
+async function checkAdminPrivileges(selectedGroupId) {
+  const response = await axios.get(
+    `http://localhost:3000/groups/${5}/members`,
+    {
+      headers: { Authorization: token },
+    }
+  );
+  const isAdmin = response.data.some(
+    (member) => member.userId === req.user.id && member.role === "admin"
+  );
+  document.getElementById("admin-controls").style.display = isAdmin
+    ? "block"
+    : "none";
+}
+
+addMemberButton.addEventListener("click", async () => {
+  const userId = prompt("Enter the User ID to add:");
+  if (userId) {
+    await axios.post(
+      `http://localhost:3000/admin/${selectedGroupId}/add`,
+      { userId },
+      { headers: { Authorization: token } }
+    );
+    alert("Member added successfully.");
+  }
+});
+
+removeMemberButton.addEventListener("click", async () => {
+  const userId = prompt("Enter the User ID to remove:");
+  if (userId) {
+    await axios.post(
+      `http://localhost:3000/admin/${selectedGroupId}/remove`,
+      { userId },
+      { headers: { Authorization: token } }
+    );
+    alert("Member removed successfully.");
+  }
+});
+
+const selectedGroupId = groupSelect.value;
+checkAdminPrivileges(selectedGroupId);

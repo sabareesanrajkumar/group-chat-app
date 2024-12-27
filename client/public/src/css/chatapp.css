@@ -143,3 +143,22 @@ body {
     font-size: 20px;
 }
 
+.admin-controls {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+  }
+  
+  .admin-controls button {
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .admin-controls button:hover {
+    background: #0056b3;
+  }
+  

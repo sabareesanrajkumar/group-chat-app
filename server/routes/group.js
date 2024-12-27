@@ -12,4 +12,10 @@ router.post(
 
 router.get("/", userAuthentication.authenticate, groupController.getGroup);
 
+router.get(
+  "/:groupId/members",
+  userAuthentication.authenticate,
+  groupController.getMembers
+);
+
 module.exports = router;

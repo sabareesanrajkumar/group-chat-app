@@ -33,3 +33,34 @@ exports.getGroup = async (req, res, next) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getMembers = async (req, res, next) => {
+  try {
+    const { groupId } = req.params;
+
+    const groupMembers = await GroupMember.findAll({
+      where: { groupId },
+      include: [
+        {
+          model: User,
+          attributes: ["id", "username"],
+        },
+      ],
+    });
+
+    if (!groupMembers) {
+      return res
+        .status(404)
+        .json({ error: "Group not found or no members available." });
+    }
+    const members = groupMembers.map((member) => ({
+      userId: member.userId,
+      username: member.User.username,
+      role: member.role,
+    }));
+
+    res.status(200).json(members);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
