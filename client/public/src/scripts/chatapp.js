@@ -3,7 +3,7 @@ const sendButton = document.getElementById("send-button");
 const chatBox = document.getElementById("chat-box");
 const token = localStorage.getItem("token");
 
-let messages = JSON.parse(localStorage.getItem("messages")) || [];
+let storedMessages = JSON.parse(localStorage.getItem("messages")) || [];
 let lastFetchedId = 0;
 async function displayMessages() {
   const response = await axios.get("http://localhost:3000/chat/", {
@@ -20,6 +20,13 @@ async function displayMessages() {
     messageElement.id = message.id;
     messageElement.innerHTML = `<span>~${message.user.username}</span><p>${message.text}</p>`;
     chatBox.appendChild(messageElement);
+    let newMessage = {
+      id: message.id,
+      username: message.user.username,
+      text: message.text,
+    };
+    storedMessages.push(newMessage);
+    localStorage.setItem("messages", JSON.stringify(storedMessages));
   });
 }
 
